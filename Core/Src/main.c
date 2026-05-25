@@ -156,7 +156,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Base_Start(&htim2);	//start timer2 as per configured
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_VAL, 2);	//start in adc in dma mode
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_VAL, 2);	//ADC sampling rate = 100Hz, uart baudrate 115200
 
   //generate sine wave blue led f_sine = 100Hz/512 = 0.195Hz, tim1 freq = 100 Hz
   HAL_TIM_PWM_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t *)SINE_WAVE_LUT_512, 512);
@@ -386,7 +386,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 9000-1;
+  htim2.Init.Prescaler = 900-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 1000-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

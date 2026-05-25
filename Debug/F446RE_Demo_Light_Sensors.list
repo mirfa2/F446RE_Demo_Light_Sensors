@@ -461,7 +461,7 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);	//start timer2 as per configured
  8000598:	480e      	ldr	r0, [pc, #56]	@ (80005d4 <main+0x5c>)
  800059a:	f002 feb3 	bl	8003304 <HAL_TIM_Base_Start>
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_VAL, 2);	//start in adc in dma mode
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_VAL, 2);	//ADC sampling rate = 100Hz, uart baudrate 115200
  800059e:	2202      	movs	r2, #2
  80005a0:	490d      	ldr	r1, [pc, #52]	@ (80005d8 <main+0x60>)
  80005a2:	480e      	ldr	r0, [pc, #56]	@ (80005dc <main+0x64>)
@@ -1037,9 +1037,9 @@ static void MX_TIM2_Init(void)
  80008f0:	4b1e      	ldr	r3, [pc, #120]	@ (800096c <MX_TIM2_Init+0x98>)
  80008f2:	f04f 4280 	mov.w	r2, #1073741824	@ 0x40000000
  80008f6:	601a      	str	r2, [r3, #0]
-  htim2.Init.Prescaler = 9000-1;
+  htim2.Init.Prescaler = 900-1;
  80008f8:	4b1c      	ldr	r3, [pc, #112]	@ (800096c <MX_TIM2_Init+0x98>)
- 80008fa:	f242 3227 	movw	r2, #8999	@ 0x2327
+ 80008fa:	f240 3283 	movw	r2, #899	@ 0x383
  80008fe:	605a      	str	r2, [r3, #4]
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
  8000900:	4b1a      	ldr	r3, [pc, #104]	@ (800096c <MX_TIM2_Init+0x98>)
