@@ -14,6 +14,7 @@ This demo features two primary independent hardware streams:
 
 By aggressively utilizing Direct Memory Access (DMA) and hardware timers, the system completely avoids blocking delays (HAL_Delay) and high-frequency interrupt overhead.
 
+<img width="1884" height="2741" alt="20260526_232439" src="https://github.com/user-attachments/assets/521c9fea-1683-4c0c-8fbe-de7ea305b5fd" />
 
 
 ⚙️ Hardware Setup
