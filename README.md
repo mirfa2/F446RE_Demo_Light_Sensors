@@ -2,7 +2,9 @@
 
 A high-efficiency, non-blocking embedded system demonstrating continuous multi-channel sensor data acquisition and dynamic actuator control. This project utilizes hardware-level peripheral linking (Timers, ADC, UART, and DMA) on the STM32F446RE to handle the entire data pipeline autonomously, leaving the main CPU core completely free for higher-level application logic.
 
+
 🚀 Project Overview
+
 This demo features two primary independent hardware streams:
 
 1.  Continuous Actuator Control: A breathing LED fading in a perfect sine wave.
@@ -11,16 +13,21 @@ This demo features two primary independent hardware streams:
 
 By aggressively utilizing Direct Memory Access (DMA) and hardware timers, the system completely avoids blocking delays (HAL_Delay) and high-frequency interrupt overhead.
 
+
 ⚙️ Hardware Setup
 
-Microcontroller: STM32 Nucleo-F446RE
+  Microcontroller: STM32 Nucleo-F446RE
 
-Sensors: 2x Photoresistors (LDRs) configured in voltage dividers with $10\text{k}\Omega$ resistors
+  Sensors: 2x Photoresistors (LDRs) configured in voltage dividers with $10\text{k}\Omega$ resistors
 
-Actuator: 1x Standard LED with a $220\Omega$ current-limiting resistor
+  Actuator: 2x Standard LED with $220\Omega$ current-limiting resistors
 
-Pin Mapping:PA5 (Example): PWM Output to LED
+Pin Mapping:
 
-PA0 & PA1 (Example): ADC1 Channel 0 and 1 inputs from the photoresistor voltage dividers
+  PA8: PWM Output to LED1
+  
+  PA7: 
 
-PA2 / PA3: USART2 TX/RX (Connected to ST-LINK Virtual COM Port)
+  PA0 & PA1 (Example): ADC1 Channel 0 and 1 inputs from the photoresistor voltage dividers
+
+  PA2 / PA3: USART2 TX/RX (Connected to ST-LINK Virtual COM Port)
