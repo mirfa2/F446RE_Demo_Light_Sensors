@@ -16,11 +16,11 @@ By aggressively utilizing Direct Memory Access (DMA) and hardware timers, the sy
 
 ⚙️ Hardware Setup
 
-  Microcontroller: STM32 Nucleo-F446RE
+  -  Microcontroller: STM32 Nucleo-F446RE
 
-  Sensors: 2x Photoresistors (LDRs) configured in voltage dividers with $10\text{k}\Omega$ resistors
+  -  Sensors: 2x Photoresistors (LDRs) configured in voltage dividers with $10\text{k}\Omega$ resistors
 
-  Actuator: 2x Standard LED with $220\Omega$ current-limiting resistors
+  -  Actuator: 2x Standard LED with $220\Omega$ current-limiting resistors
 
 Pin Mapping:
 
