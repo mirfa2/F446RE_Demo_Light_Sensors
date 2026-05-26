@@ -60,6 +60,7 @@ Once the ADC buffer triggers a callback, the CPU rapidly formats the raw 12-bit 
 📊 Data Visualization
 
 The STM32 transmits data in the following comma-separated ASCII format at 115200 baud:
+
 [Sensor 1 Value], [Sensor 2 Value] \r\n
 
 TeraTerm: Connect to the assigned COM port to view the raw data stream.
