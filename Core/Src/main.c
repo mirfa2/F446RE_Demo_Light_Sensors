@@ -68,6 +68,7 @@ static void MX_TIM1_Init(void);
 uint16_t ADC_VAL[2];	//store ADC data
 int DMAcount=0;
 int ADCcount=0;
+int ADChalfcount=0;
 
 // Pre-computed 512-point sine wave scaled for ARR = 1000
 const uint16_t SINE_WAVE_LUT_512[512] = {
@@ -110,6 +111,11 @@ const uint16_t SINE_WAVE_LUT_512[512] = {
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	ADCcount++;
+}
+
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
+{
+	ADChalfcount++;
 }
 
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
