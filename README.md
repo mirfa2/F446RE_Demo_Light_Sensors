@@ -12,9 +12,15 @@ This demo features two primary independent hardware streams:
 By aggressively utilizing Direct Memory Access (DMA) and hardware timers, the system completely avoids blocking delays (HAL_Delay) and high-frequency interrupt overhead.
 
 ⚙️ Hardware Setup
+
 Microcontroller: STM32 Nucleo-F446RE
+
 Sensors: 2x Photoresistors (LDRs) configured in voltage dividers with $10\text{k}\Omega$ resistors
+
 Actuator: 1x Standard LED with a $220\Omega$ current-limiting resistor
+
 Pin Mapping:PA5 (Example): PWM Output to LED
+
 PA0 & PA1 (Example): ADC1 Channel 0 and 1 inputs from the photoresistor voltage dividers
+
 PA2 / PA3: USART2 TX/RX (Connected to ST-LINK Virtual COM Port)
