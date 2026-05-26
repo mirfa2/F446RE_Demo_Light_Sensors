@@ -3,6 +3,7 @@
 A high-efficiency, non-blocking embedded system demonstrating continuous multi-channel sensor data acquisition and dynamic actuator control. This project utilizes hardware-level peripheral linking (Timers, ADC, UART, and DMA) on the STM32F446RE to handle the entire data pipeline autonomously, leaving the main CPU core completely free for higher-level application logic.
 
 
+
 🚀 Project Overview
 
 This demo features two primary independent hardware streams:
@@ -12,6 +13,7 @@ This demo features two primary independent hardware streams:
 2.  Multi-Channel Sensor Acquisition: Dual photoresistors sampling differential light data at a strict, timer-controlled frequency and streaming the formatted data to a PC.
 
 By aggressively utilizing Direct Memory Access (DMA) and hardware timers, the system completely avoids blocking delays (HAL_Delay) and high-frequency interrupt overhead.
+
 
 
 ⚙️ Hardware Setup
@@ -32,6 +34,8 @@ Pin Mapping:
 
   - PA2 / PA3: USART2 TX/RX (Connected to ST-LINK Virtual COM Port)
 
+
+
 🧠 Software Architecture
 
 This project is built using C and the STM32 HAL drivers within STM32CubeIDE. The architecture solves common real-time embedded bottlenecks through three key implementations:
@@ -50,3 +54,14 @@ To prevent the ADC from overwhelming the data pipeline in free-running mode, a d
 3. Non-Blocking UART Transmission
    
 Once the ADC buffer triggers a callback, the CPU rapidly formats the raw 12-bit integer pairs into an ASCII comma-separated string. The transmission is then handed off to the UART DMA controller, preventing the CPU from waiting on the relatively slow baud rate of the serial connection.
+
+
+
+📊 Data Visualization
+
+The STM32 transmits data in the following comma-separated ASCII format at 115200 baud:
+[Sensor 1 Value], [Sensor 2 Value] \r\n
+
+TeraTerm: Connect to the assigned COM port to view the raw data stream.
+
+STM32CubeMonitor / Node-RED: The system is optimized for real-time visualization. You can route the serial string into a CSV parsing node to plot the dynamic response of both sensors simultaneously on a digital dashboard.
