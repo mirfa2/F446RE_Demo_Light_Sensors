@@ -70,37 +70,6 @@ static void MX_USART2_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-uint16_t ADCBatchData[ADC_BUF_LEN];	//store the 2 channels raw ADC data in a batch of 20 samples (40 elements)
-int DMAPWMcount=0;
-int ADCcount=0;
-int ADChalfcount=0;
-
-char uartTxBuffer[256];	//store the formatted ADC data to transmit via uart, 256 bytes big enough to temporarily hold the formatted 10 samples
-
-//helper function to format the raw adc data and store into uartTxBuffer, then transmit the half buffer
-//param: half of the adc buffer = ADCBatchData[0] or ADCBatchData[20]
-void processADCData(uint16_t* half_buffer)
-{
-
-    uartTxBuffer[0] = '\0';	//Clear the tx buffer
-    char temp[32];	//temp buffer to format and move ADC data into the main tx buffer
-
-    //format and load the adc data to the main tx buffer
-    for(int i = 0; i < (ADC_BUF_LEN / 2); i += 2)
-    {
-    	//load raw ADC data
-        uint16_t adcDataC1 = half_buffer[i];		//channel 1
-        uint16_t adcDataC2 = half_buffer[i + 1];	//channel 2
-
-        //format the datas and store to temp, then temp cocantenate it to the main tx buffer
-        sprintf(temp, "%u, %u \r\n", adcDataC1, adcDataC2);
-        strcat(uartTxBuffer, temp);	//strcat() appends a copy of one string to the end of another
-    }
-
-    //transmit the formatted data
-    HAL_UART_Transmit_DMA(&huart2, (uint8_t*)uartTxBuffer, strlen(uartTxBuffer));
-}
-
 // Pre-computed 512-point sine wave scaled for ARR = 1000
 const uint16_t SINE_WAVE_LUT_512[512] = {
      500,  506,  512,  518,  525,  531,  537,  543,  549,  555,  561,  567,  573,  579,  585,  592,
@@ -137,18 +106,42 @@ const uint16_t SINE_WAVE_LUT_512[512] = {
      402,  408,  415,  421,  427,  433,  439,  445,  451,  457,  463,  469,  475,  482,  488,  494
 };
 
+uint16_t ADCBatchData[ADC_BUF_LEN];	//store the 2 channels raw ADC data in a batch of 20 samples (40 elements)
+char uartTxBuffer[256];	//store the formatted ADC data to transmit via uart, 256 bytes big enough to temporarily hold the formatted 10 samples
+
+//helper function to format the raw adc data and store into uartTxBuffer, then transmit the half buffer
+//param: half of the adc buffer = ADCBatchData[0] or ADCBatchData[20]
+void processADCData(uint16_t* half_buffer)
+{
+
+    uartTxBuffer[0] = '\0';	//Clear the tx buffer
+    char temp[32];	//temp buffer to format and move ADC data into the main tx buffer
+
+    //format and load the adc data to the main tx buffer
+    for(int i = 0; i < (ADC_BUF_LEN / 2); i += 2)
+    {
+    	//load raw ADC data
+        uint16_t adcDataC1 = half_buffer[i];		//channel 1
+        uint16_t adcDataC2 = half_buffer[i + 1];	//channel 2
+
+        //format the datas and store to temp, then temp cocantenate it to the main tx buffer
+        sprintf(temp, "%u, %u \r\n", adcDataC1, adcDataC2);
+        strcat(uartTxBuffer, temp);	//strcat() appends a copy of one string to the end of another
+    }
+
+    //transmit the formatted data
+    HAL_UART_Transmit_DMA(&huart2, (uint8_t*)uartTxBuffer, strlen(uartTxBuffer));
+}
 
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	processADCData(&ADCBatchData[0]);	//process and tx first half of the ADC data
-	ADChalfcount++;
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	processADCData(&ADCBatchData[ADC_BUF_LEN / 2]);	//process and tx 2nd half of the ADC data
-	ADCcount++;
 }
 
 
