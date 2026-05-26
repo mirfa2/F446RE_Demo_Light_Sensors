@@ -46,3 +46,7 @@ To prevent the ADC from overwhelming the data pipeline in free-running mode, a d
   - Data is written via DMA into a 40-element batch buffer (holding 20 samples per channel).
   - The system uses Half-Transfer and Full-Transfer DMA callbacks to implement a Ping-Pong buffer scheme.
   - This ensures the CPU can safely format and transmit the first half of the data while the ADC hardware seamlessly fills the second half, entirely eliminating race conditions and data corruption.
+
+3. Non-Blocking UART Transmission
+   
+Once the ADC buffer triggers a callback, the CPU rapidly formats the raw 12-bit integer pairs into an ASCII comma-separated string. The transmission is then handed off to the UART DMA controller, preventing the CPU from waiting on the relatively slow baud rate of the serial connection.
