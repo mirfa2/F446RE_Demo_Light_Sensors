@@ -3837,9 +3837,9 @@ LOAD C:/ST/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.exte
 .rodata         0x08006860      0x460
                 0x08006860                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x08006860        0x9 ./Core/Src/main.o
+ .rodata        0x08006860        0xa ./Core/Src/main.o
  *(.rodata*)
- *fill*         0x08006869        0x3 
+ *fill*         0x0800686a        0x2 
  .rodata.SINE_WAVE_LUT_512
                 0x0800686c      0x400 ./Core/Src/main.o
                 0x0800686c                SINE_WAVE_LUT_512

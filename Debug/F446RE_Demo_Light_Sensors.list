@@ -480,7 +480,7 @@ void processADCData(uint16_t* half_buffer)
  8000618:	853b      	strh	r3, [r7, #40]	@ 0x28
 
         //format the datas and store to temp, then temp cocantenate it to the main tx buffer
-        sprintf(temp, "%u, %u\r\n", adcDataC1, adcDataC2);
+        sprintf(temp, "%u, %u \r\n", adcDataC1, adcDataC2);
  800061a:	8d7a      	ldrh	r2, [r7, #42]	@ 0x2a
  800061c:	8d3b      	ldrh	r3, [r7, #40]	@ 0x28
  800061e:	f107 0008 	add.w	r0, r7, #8

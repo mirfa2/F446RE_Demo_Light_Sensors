@@ -93,7 +93,7 @@ void processADCData(uint16_t* half_buffer)
         uint16_t adcDataC2 = half_buffer[i + 1];	//channel 2
 
         //format the datas and store to temp, then temp cocantenate it to the main tx buffer
-        sprintf(temp, "%u, %u\r\n", adcDataC1, adcDataC2);
+        sprintf(temp, "%u, %u \r\n", adcDataC1, adcDataC2);
         strcat(uartTxBuffer, temp);	//strcat() appends a copy of one string to the end of another
     }
 
@@ -149,12 +149,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	processADCData(&ADCBatchData[ADC_BUF_LEN / 2]);	//process and tx 2nd half of the ADC data
 	ADCcount++;
-}
-
-
-void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
-{
-	DMAPWMcount++;
 }
 
 
