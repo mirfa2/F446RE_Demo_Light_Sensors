@@ -67,3 +67,11 @@ The STM32 transmits data in the following comma-separated ASCII format at 115200
 TeraTerm: Connect to the assigned COM port to view the raw data stream.
 
 STM32CubeMonitor / Node-RED: The system is optimized for real-time visualization. You can route the serial string into a CSV parsing node to plot the dynamic response of both sensors simultaneously on a digital dashboard.
+
+<video src="https://github.com/user-attachments/assets/591c0863-04cc-4998-aed5-7c1d4f248533" controls="controls" style="max-width: 100%;">
+</video>
+
+
+
+
+
