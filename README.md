@@ -31,3 +31,18 @@ Pin Mapping:
   - PA0 & PA1: ADC1 Channel 0 and 1 inputs from the photoresistor voltage dividers
 
   - PA2 / PA3: USART2 TX/RX (Connected to ST-LINK Virtual COM Port)
+
+🧠 Software Architecture
+
+This project is built using C and the STM32 HAL drivers within STM32CubeIDE. The architecture solves common real-time embedded bottlenecks through three key implementations:
+
+1. Hardware-Driven PWM Sine Wave (Look-Up Table)
+   
+Calculating trigonometry in real-time is computationally expensive. Instead, a pre-computed 512-point Look-Up Table (LUT) is stored in memory. A hardware timer triggers a DMA stream in Circular Mode to continuously feed these values into the PWM Capture/Compare Register (CCR). The result is a mathematically smooth breathing LED that requires zero CPU cycles to maintain.
+
+2. Timer-Triggered ADC with Ping-Pong Buffering
+
+To prevent the ADC from overwhelming the data pipeline in free-running mode, a dedicated hardware timer triggers conversions at a strict $100\text{Hz}$.
+  - Data is written via DMA into a 40-element batch buffer (holding 20 samples per channel).
+  - The system uses Half-Transfer and Full-Transfer DMA callbacks to implement a Ping-Pong buffer scheme.
+  - This ensures the CPU can safely format and transmit the first half of the data while the ADC hardware seamlessly fills the second half, entirely eliminating race conditions and data corruption.
