@@ -24,10 +24,10 @@ By aggressively utilizing Direct Memory Access (DMA) and hardware timers, the sy
 
 Pin Mapping:
 
-  PA8: PWM Output to LED1
+  - PA8: Timer 1 PWM Output to LED1 (Blue)
   
-  PA7: 
+  - PA7: Timer 1 Complementary Output to LED2 (Red)
 
-  PA0 & PA1 (Example): ADC1 Channel 0 and 1 inputs from the photoresistor voltage dividers
+  - PA0 & PA1: ADC1 Channel 0 and 1 inputs from the photoresistor voltage dividers
 
-  PA2 / PA3: USART2 TX/RX (Connected to ST-LINK Virtual COM Port)
+  - PA2 / PA3: USART2 TX/RX (Connected to ST-LINK Virtual COM Port)
