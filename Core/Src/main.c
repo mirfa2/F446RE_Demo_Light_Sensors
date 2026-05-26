@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,7 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define ADC_BUF_LEN 40	//set adc buffer size
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,6 +48,9 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 DMA_HandleTypeDef hdma_tim1_ch1;
 
+UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_tx;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -58,6 +62,7 @@ static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -65,10 +70,36 @@ static void MX_TIM1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-uint16_t ADC_VAL[2];	//store ADC data
-int DMAcount=0;
+uint16_t ADCBatchData[ADC_BUF_LEN];	//store the 2 channels raw ADC data in a batch of 20 samples (40 elements)
+int DMAPWMcount=0;
 int ADCcount=0;
 int ADChalfcount=0;
+
+char uartTxBuffer[256];	//store the formatted ADC data to transmit via uart, 256 bytes big enough to temporarily hold the formatted 10 samples
+
+//helper function to format the raw adc data and store into uartTxBuffer, then transmit the half buffer
+//param: half of the adc buffer = ADCBatchData[0] or ADCBatchData[20]
+void processADCData(uint16_t* half_buffer)
+{
+
+    uartTxBuffer[0] = '\0';	//Clear the tx buffer
+    char temp[32];	//temp buffer to format and move ADC data into the main tx buffer
+
+    //format and load the adc data to the main tx buffer
+    for(int i = 0; i < (ADC_BUF_LEN / 2); i += 2)
+    {
+    	//load raw ADC data
+        uint16_t adcDataC1 = half_buffer[i];		//channel 1
+        uint16_t adcDataC2 = half_buffer[i + 1];	//channel 2
+
+        //format the datas and store to temp, then temp cocantenate it to the main tx buffer
+        sprintf(temp, "%u, %u\r\n", adcDataC1, adcDataC2);
+        strcat(uartTxBuffer, temp);	//strcat() appends a copy of one string to the end of another
+    }
+
+    //transmit the formatted data
+    HAL_UART_Transmit_DMA(&huart2, (uint8_t*)uartTxBuffer, strlen(uartTxBuffer));
+}
 
 // Pre-computed 512-point sine wave scaled for ARR = 1000
 const uint16_t SINE_WAVE_LUT_512[512] = {
@@ -108,19 +139,22 @@ const uint16_t SINE_WAVE_LUT_512[512] = {
 
 
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-	ADCcount++;
-}
-
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 {
+	processADCData(&ADCBatchData[0]);	//process and tx first half of the ADC data
 	ADChalfcount++;
 }
 
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+	processADCData(&ADCBatchData[ADC_BUF_LEN / 2]);	//process and tx 2nd half of the ADC data
+	ADCcount++;
+}
+
+
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
-	DMAcount++;
+	DMAPWMcount++;
 }
 
 
@@ -159,10 +193,11 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   MX_TIM1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Base_Start(&htim2);	//start timer2 as per configured
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_VAL, 2);	//ADC sampling rate = 100Hz, uart baudrate 115200
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADCBatchData, ADC_BUF_LEN);	//ADC sampling rate = 100Hz, uart baudrate 115200
 
   //generate sine wave blue led f_sine = 100Hz/512 = 0.195Hz, tim1 freq = 100 Hz
   HAL_TIM_PWM_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t *)SINE_WAVE_LUT_512, 512);
@@ -419,6 +454,39 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -426,8 +494,12 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Stream6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
   /* DMA2_Stream0_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
